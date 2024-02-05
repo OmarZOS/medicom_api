@@ -1,0 +1,26 @@
+version: '3'
+services:
+  mysql:
+    image: mysql
+    container_name: mysql-node
+    restart: always
+    command: --init-file /data/application/init.sql
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - ${MYSQL_PORT}:3306
+    volumes:
+        - ./mysql/model.sql:/data/application/init.sql
+        - ./data:/var/lib/mysql
+        # - ./mysql/my.cnf:/etc/mysql/my.cnf  # Mount custom my.cnf
+    # networks:
+    #   - medicom_net
+volumes:
+  data:
+# networks:
+#   medicom_net:
+#     name: medicom_net
+#     driver: bridge

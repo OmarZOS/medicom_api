@@ -1,0 +1,134 @@
+@startuml
+
+
+
+class InvoiceItem {
+  + quantity: int
+  + unitPrice: double
+  + subtotal: double
+}
+
+class Invoice {
+  + invoiceId: int
+  + order: Order
+  + totalAmount: double
+  + issueDate: DateTime
+}
+
+class Order {
+  + orderId: int
+  + cartId: int
+  + paymentMethod: String
+  + orderstatus: String
+  + timestamp: DateTime
+}
+
+class Payment {
+  + paymentId: int
+  + order: Order
+  + paymentMethod: String
+  + amount: double
+  + paymentstatus: String
+  + timestamp: DateTime
+}
+
+class PaymentMethod {
+  + methodId: int
+  + methodName: String
+}
+
+class Product {
+  + productId: int
+  + productName: String
+  + description: String
+  + price: double
+  + availability: int
+}
+
+class Category {
+  + categoryId: int
+  + categoryName: String
+  + description: String
+}
+
+class Review {
+  + reviewId: int
+  + user: User
+  + product: Product
+  + rating: int
+  + comment: String
+  + timestamp: DateTime
+}
+
+class DeliveryBroker {
+  + brokerId: int
+  + brokerName: String
+}
+
+class DeliveryStatus {
+  + statusId: int
+  + status: String
+  + timestamp: DateTime
+}
+
+class ProductSupplier {
+  + supplierId: int
+  + supplierName: String
+  + contactInfo: String
+}
+
+class UserProfile {
+  + userId: int
+  + fullName: String
+  + address: String
+}
+
+class UserPreferences {
+  + userId: int
+  + preferences: List<String>
+}
+
+class UserRole {
+  + userId: int
+  + role: String
+}
+
+class User {
+  + userId: int
+  + username: String
+  + email: String
+  + password: String
+}
+
+class Promotion {
+  + promotionId: int
+  + productsupplierId: int
+  + deliverybrokerId: int
+  + discount: double
+}
+class CategoryBelonging {
+  + productId: int
+  + categoryId: int
+}
+
+
+Order --> "1" User
+Invoice "1" --> "0..*" InvoiceItem
+Invoice "1" --> "1" Order
+Payment "0..1" --> "0..1" PaymentMethod
+Payment "0..1" --> "1" Order
+Product "0..*" --> "1" CategoryBelonging
+CategoryBelonging "1" --> "0..*" Category
+Review "0..*" --> "1" User
+Review "1" --> "1" Product
+UserProfile "1" --> "1" User
+UserPreferences "1" --> "1" User
+UserRole "1" --> "1..*" User
+DeliveryStatus "1" --> "0..1" Order
+DeliveryBroker "1" --> "0..1" Order
+ProductSupplier "1" --> "0..*" Promotion
+Promotion "1" --> "0..*" DeliveryBroker 
+ProductSupplier "0..1" --> "0..*" Product
+InvoiceItem "1" --> "0..*" Product
+
+@enduml
