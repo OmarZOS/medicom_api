@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from server.constants import *
 from server.core.api_models import DeliveryBroker_API, InvoiceItem_API, OrderMed_API, Payment_API, Product_API, User_API
-from server.features.product.product_fetch import fetch_all_product, fetch_product_by_id
+from server.features.product.product_fetch import fetch_all_product, fetch_product_by_id, fetch_products_by_category
 from server.features.product.product_insert import insert_product
+from server.features.user.user_fetch import fetch_all_users, fetch_user_by_id
+from server.features.user.user_insert import insert_user
 
 # ----------- App initialisation -------------------------------------
 
@@ -18,7 +20,7 @@ def home():
 
 # @app.get("/DeliveryBroker/all")
 # def get_all_DeliveryBrokers():
-#     return fetch_all_type_DeliveryBroker()
+#     return fetch_all_DeliveryBroker()
 
 # @app.get("/DeliveryBroker/{DeliveryBroker_id}")
 # def get_DeliveryBroker_by_id(DeliveryBroker_id: str):
@@ -34,7 +36,7 @@ def home():
 
 # @app.get("/DeliveryPromotion/all")
 # def get_all_DeliveryPromotions():
-#     return fetch_all_type_DeliveryPromotion()
+#     return fetch_all_DeliveryPromotion()
 
 # @app.get("/DeliveryPromotion/{DeliveryPromotion_id}")
 # def get_DeliveryPromotion_by_id(DeliveryPromotion_id: str):
@@ -50,7 +52,7 @@ def home():
 
 # @app.get("/Order/all")
 # def get_all_OrderMeds():
-#     return fetch_all_type_Order()
+#     return fetch_all_Order()
 
 # @app.get("/Order/{Order_id}")
 # def get_Order_by_id(Order_id: str):
@@ -73,6 +75,11 @@ def get_Product_by_id(Product_id: str):
     res = fetch_product_by_id(Product_id)
     return res
 
+@app.get("/Product/Category/{Category_id}")
+def get_Category_by_id(Category_id: int):
+    res = fetch_products_by_category(Category_id)
+    return res
+
 @app.post("/Product/insertion")
 def insert_Product(product: Product_API):
     res = insert_product(product)
@@ -80,25 +87,25 @@ def insert_Product(product: Product_API):
 
 # # User related endpoints
 
-# @app.get("/User/all")
-# def get_all_Users():
-#     return fetch_all_type_User()
+@app.get("/User/all")
+def get_all_Users():
+    return fetch_all_users()
 
-# @app.get("/User/{User_id}")
-# def get_User_by_id(User_id: str):
-#     res = fetch_User_by_id(User_id)
-#     return res
+@app.get("/User/{User_id}")
+def get_User_by_id(User_id: int):
+    res = fetch_user_by_id(User_id)
+    return res
 
-# @app.post("/User/insertion")
-# def insert_User(User: User_API):
-#     res = insert_User(User)
-#     return res
+@app.post("/User/insertion")
+def insert_User(User: User_API):
+    res = insert_user(User)
+    return res
 
 # # Payment related endpoints
 
 # @app.get("/Payment/all")
 # def get_all_Payments():
-#     return fetch_all_type_Payment()
+#     return fetch_all_Payment()
 
 # @app.get("/Payment/{Payment_id}")
 # def get_Payment_by_id(Payment_id: str):
@@ -114,7 +121,7 @@ def insert_Product(product: Product_API):
 
 # @app.get("/InvoiceItem/all")
 # def get_all_InvoiceItems():
-#     return fetch_all_type_InvoiceItem()
+#     return fetch_all_InvoiceItem()
 
 # @app.get("/InvoiceItem/{InvoiceItem_id}")
 # def get_InvoiceItem_by_id(InvoiceItem_id: str):
@@ -131,7 +138,7 @@ def insert_Product(product: Product_API):
 
 # @app.get("/Invoice/all")
 # def get_all_Invoices():
-#     return fetch_all_type_Invoice()
+#     return fetch_all_Invoice()
 
 # @app.get("/Invoice/{Invoice_id}")
 # def get_Invoice_by_id(Invoice_id: str):

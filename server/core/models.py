@@ -21,7 +21,7 @@ class DeliveryBroker(Base):
     brokerId = Column(Integer, primary_key=True)
     brokerName = Column(String(255))
 
-    Promotion = relationship('Promotion', back_populates='DeliveryBroker_')
+    DeliveryPromotion = relationship('DeliveryPromotion', back_populates='DeliveryBroker_')
 
 
 class DeliveryStatus(Base):
@@ -36,7 +36,7 @@ class InvoiceItem(Base):
     __tablename__ = 'InvoiceItem'
 
     quantity = Column(Integer, primary_key=True, nullable=False)
-    unitPrice  = Column(Double(asdecimal=True), primary_key=True, nullable=False)
+    unitPrice = Column(Double(asdecimal=True), primary_key=True, nullable=False)
     subtotal = Column(Double(asdecimal=True), primary_key=True, nullable=False)
 
 
@@ -81,40 +81,25 @@ class ProductSupplier(Base):
     supplierName = Column(String(255))
 
     Product_ = relationship('Product', secondary='SupplyInfo', back_populates='ProductSupplier')
-    Promotion = relationship('Promotion', back_populates='ProductSupplier_')
-
-
-class UserMed(Base):
-    __tablename__ = 'User_Med'
-
-    user_MedId = Column(Integer, primary_key=True)
-    user_Medname = Column(String(255))
-    email = Column(String(255))
-    password = Column(String(255))
-
-    Review = relationship('Review', back_populates='User_Med')
+    DeliveryPromotion = relationship('DeliveryPromotion', back_populates='ProductSupplier_')
 
 
 class UserMedPreferences(Base):
     __tablename__ = 'User_MedPreferences'
 
-    user_MedId = Column(Integer, primary_key=True)
+    user_preferencesId = Column(Integer, primary_key=True)
     preferences = Column(JSON)
 
-
-class UserMedProfile(Base):
-    __tablename__ = 'User_MedProfile'
-
-    user_MedId = Column(Integer, primary_key=True)
-    fullName = Column(String(255))
-    address = Column(String(255))
+    User_Med = relationship('UserMed', back_populates='User_MedPreferences')
 
 
 class UserMedRole(Base):
     __tablename__ = 'User_MedRole'
 
-    user_MedId = Column(Integer, primary_key=True)
-    role = Column(String(255))
+    user_RoleId = Column(Integer, primary_key=True)
+    user_role = Column(String(255))
+
+    User_Med = relationship('UserMed', back_populates='User_MedRole')
 
 
 t_CategoryBelonging = Table(
@@ -125,6 +110,24 @@ t_CategoryBelonging = Table(
     ForeignKeyConstraint(['productId'], ['Product.productId'], name='CategoryBelonging_ibfk_1'),
     Index('categoryId', 'categoryId')
 )
+
+
+class DeliveryPromotion(Base):
+    __tablename__ = 'DeliveryPromotion'
+    __table_args__ = (
+        ForeignKeyConstraint(['deliverybrokerId'], ['DeliveryBroker.brokerId'], name='DeliveryPromotion_ibfk_2'),
+        ForeignKeyConstraint(['productsupplierId'], ['ProductSupplier.supplierId'], name='DeliveryPromotion_ibfk_1'),
+        Index('deliverybrokerId', 'deliverybrokerId'),
+        Index('productsupplierId', 'productsupplierId')
+    )
+
+    DeliverypromotionId = Column(Integer, primary_key=True)
+    productsupplierId = Column(Integer)
+    deliverybrokerId = Column(Integer)
+    discount = Column(Double(asdecimal=True))
+
+    DeliveryBroker_ = relationship('DeliveryBroker', back_populates='DeliveryPromotion')
+    ProductSupplier_ = relationship('ProductSupplier', back_populates='DeliveryPromotion')
 
 
 class Invoice(Base):
@@ -159,22 +162,37 @@ class Payment(Base):
     Order_Med = relationship('OrderMed', back_populates='Payment')
 
 
-class Promotion(Base):
-    __tablename__ = 'Promotion'
+t_SupplyInfo = Table(
+    'SupplyInfo', metadata,
+    Column('supplierId', Integer, primary_key=True, nullable=False),
+    Column('productId', Integer, primary_key=True, nullable=False),
+    ForeignKeyConstraint(['productId'], ['Product.productId'], name='SupplyInfo_ibfk_2'),
+    ForeignKeyConstraint(['supplierId'], ['ProductSupplier.supplierId'], name='SupplyInfo_ibfk_1'),
+    Index('productId', 'productId')
+)
+
+
+class UserMed(Base):
+    __tablename__ = 'User_Med'
     __table_args__ = (
-        ForeignKeyConstraint(['deliverybrokerId'], ['DeliveryBroker.brokerId'], name='Promotion_ibfk_2'),
-        ForeignKeyConstraint(['productsupplierId'], ['ProductSupplier.supplierId'], name='Promotion_ibfk_1'),
-        Index('deliverybrokerId', 'deliverybrokerId'),
-        Index('productsupplierId', 'productsupplierId')
+        ForeignKeyConstraint(['user_RoleId'], ['User_MedRole.user_RoleId'], name='User_Med_ibfk_1'),
+        ForeignKeyConstraint(['user_preferencesId'], ['User_MedPreferences.user_preferencesId'], name='User_Med_ibfk_2'),
+        Index('user_RoleId', 'user_RoleId'),
+        Index('user_preferencesId', 'user_preferencesId')
     )
 
-    promotionId = Column(Integer, primary_key=True)
-    productsupplierId = Column(Integer)
-    deliverybrokerId = Column(Integer)
-    discount = Column(Double(asdecimal=True))
+    user_MedId = Column(Integer, primary_key=True)
+    user_Medname = Column(String(255))
+    email = Column(String(255))
+    password = Column(String(255))
+    fullName = Column(String(255))
+    address = Column(String(255))
+    user_RoleId = Column(Integer)
+    user_preferencesId = Column(Integer)
 
-    DeliveryBroker_ = relationship('DeliveryBroker', back_populates='Promotion')
-    ProductSupplier_ = relationship('ProductSupplier', back_populates='Promotion')
+    User_MedRole = relationship('UserMedRole', back_populates='User_Med')
+    User_MedPreferences = relationship('UserMedPreferences', back_populates='User_Med')
+    Review = relationship('Review', back_populates='User_Med')
 
 
 class Review(Base):
@@ -195,13 +213,3 @@ class Review(Base):
 
     Product_ = relationship('Product', back_populates='Review')
     User_Med = relationship('UserMed', back_populates='Review')
-
-
-t_SupplyInfo = Table(
-    'SupplyInfo', metadata,
-    Column('supplierId', Integer, primary_key=True, nullable=False),
-    Column('productId', Integer, primary_key=True, nullable=False),
-    ForeignKeyConstraint(['productId'], ['Product.productId'], name='SupplyInfo_ibfk_2'),
-    ForeignKeyConstraint(['supplierId'], ['ProductSupplier.supplierId'], name='SupplyInfo_ibfk_1'),
-    Index('productId', 'productId')
-)

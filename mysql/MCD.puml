@@ -77,11 +77,6 @@ class ProductSupplier {
   + contactInfo: String
 }
 
-class UserProfile {
-  + userId: int
-  + fullName: String
-  + address: String
-}
 
 class UserPreferences {
   + userId: int
@@ -98,6 +93,8 @@ class User {
   + username: String
   + email: String
   + password: String
+  + fullName: String
+  + address: String
 }
 
 class Promotion {

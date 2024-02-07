@@ -13,8 +13,9 @@ def get_engine(db_uri):
 
 def get_session(engine,object=None):
     
-    if object_session(object):
-        return object_session(object)
+    if object:        
+        if object_session(object):
+            return object_session(object)
 
     # Create the database engine and session
     Session = sessionmaker(bind=engine)
@@ -44,19 +45,26 @@ def add_record(engine, obj):
         if existing_obj is not None:
             # Object already exists, return the existing object
             # final_obj = existing_obj
+            new_obj = obj_class(**obj_dict)
+            session.commit()
+            session.refresh(new_obj)
             session.expunge(existing_obj)
             return existing_obj
 
+    # Exclude the primary key attribute from obj_dict
+    obj_dict = {attr: value for attr, value in obj_dict.items() if attr != primary_key_name}
     # Create a new object with non-empty attributes
     new_obj = obj_class(**obj_dict)
+
 
     # Add the new object to the session and commit
     # if not session.object_session(new_obj):
     session.add(new_obj)
     session.commit()
     session.refresh(new_obj)
-    # session.expunge(new_obj) 
+    session.expunge(new_obj) 
     # Return the added object
+    
     return new_obj
 
 # Function to add many records to tables

@@ -1,11 +1,7 @@
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
-
-
-
--- Drop existing database if it exists
-DROP DATABASE IF EXISTS Medicom;
+-- Drop existing tables if they exist
 
 -- Create a new database
 CREATE DATABASE Medicom;
@@ -13,26 +9,7 @@ CREATE DATABASE Medicom;
 -- Use the newly created database
 USE Medicom;
 
--- Drop existing tables if they exist
 
-DROP TABLE IF EXISTS InvoiceItem;
-DROP TABLE IF EXISTS Invoice;
-DROP TABLE IF EXISTS Order_Med;
-DROP TABLE IF EXISTS Payment;
-DROP TABLE IF EXISTS PaymentMethod;
-DROP TABLE IF EXISTS Product;
-DROP TABLE IF EXISTS Category;
-DROP TABLE IF EXISTS CategoryBelonging;
-DROP TABLE IF EXISTS Review;
-DROP TABLE IF EXISTS DeliveryBroker;
-DROP TABLE IF EXISTS DeliveryStatus;
-DROP TABLE IF EXISTS ProductSupplier;
-DROP TABLE IF EXISTS SupplyInfo;
-DROP TABLE IF EXISTS User_MedProfile;
-DROP TABLE IF EXISTS User_MedPreferences;
-DROP TABLE IF EXISTS User_MedRole;
-DROP TABLE IF EXISTS User_Med;
-DROP TABLE IF EXISTS Promotion;
 
 -- Create tables
 -- Create tables
@@ -133,37 +110,95 @@ CREATE TABLE SupplyInfo (
 );
 
 
-CREATE TABLE User_MedProfile (
-  user_MedId INT AUTO_INCREMENT PRIMARY KEY,
-  fullName VARCHAR(255),
-  address VARCHAR(255)
-);
-
 CREATE TABLE User_MedPreferences (
-  user_MedId INT AUTO_INCREMENT PRIMARY KEY,
+  user_preferencesId INT AUTO_INCREMENT PRIMARY KEY,
   preferences JSON
 );
 
 CREATE TABLE User_MedRole (
-  user_MedId INT AUTO_INCREMENT PRIMARY KEY,
-  role VARCHAR(255)
+  user_RoleId INT AUTO_INCREMENT PRIMARY KEY,
+  user_role VARCHAR(255)
 );
 
 CREATE TABLE User_Med (
   user_MedId INT AUTO_INCREMENT PRIMARY KEY,
   user_Medname VARCHAR(255),
   email VARCHAR(255),
-  password VARCHAR(255)
+  password VARCHAR(255),
+  fullName VARCHAR(255),
+  address VARCHAR(255),
+  user_RoleId INT,
+  user_preferencesId INT,
+  FOREIGN KEY (user_RoleId) REFERENCES User_MedRole(user_RoleId),
+  FOREIGN KEY (user_preferencesId) REFERENCES User_MedPreferences(user_preferencesId)
 );
 
-CREATE TABLE Promotion (
-  promotionId INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE DeliveryPromotion (
+  DeliverypromotionId INT AUTO_INCREMENT PRIMARY KEY,
   productsupplierId INT,
   deliverybrokerId INT,
   discount DOUBLE,
   FOREIGN KEY (productsupplierId) REFERENCES ProductSupplier(supplierId),
   FOREIGN KEY (deliverybrokerId) REFERENCES DeliveryBroker(brokerId)
 );
+
+INSERT INTO User_MedRole (user_role) VALUES ('Administrator');
+INSERT INTO User_MedRole (user_role) VALUES ('Manager');
+INSERT INTO User_MedRole (user_role) VALUES ('Customer');
+INSERT INTO User_MedRole (user_role) VALUES ('Guest');
+INSERT INTO User_MedRole (user_role) VALUES ('Support Representative');
+INSERT INTO User_MedRole (user_role) VALUES ('Content Moderator');
+INSERT INTO User_MedRole (user_role) VALUES ('Marketing Manager');
+INSERT INTO User_MedRole (user_role) VALUES ('Warehouse Manager');
+INSERT INTO User_MedRole (user_role) VALUES ('Finance Manager');
+INSERT INTO User_MedRole (user_role) VALUES ('System Administrator');
+
+INSERT INTO PaymentMethod (methodName) VALUES ('Visa');
+INSERT INTO PaymentMethod (methodName) VALUES ('Mastercard');
+INSERT INTO PaymentMethod (methodName) VALUES ('American Express');
+INSERT INTO PaymentMethod (methodName) VALUES ('Cash on Delivery');
+INSERT INTO PaymentMethod (methodName) VALUES ('Bank Transfer');
+
+INSERT INTO Category (categoryName, description) VALUES ('Diagnostic Equipment', 'Tools used for diagnosing medical conditions.');
+INSERT INTO Category (categoryName, description) VALUES ('Surgical Instruments', 'Instruments used during surgical procedures.');
+INSERT INTO Category (categoryName, description) VALUES ('Medical Imaging Devices', 'Devices for visualizing internal body structures.');
+INSERT INTO Category (categoryName, description) VALUES ('Monitoring Devices', 'Devices for monitoring vital signs and health parameters.');
+INSERT INTO Category (categoryName, description) VALUES ('Dental Equipment', 'Equipment used in dental clinics and practices.');
+INSERT INTO Category (categoryName, description) VALUES ('Orthopedic Supplies', 'Supplies related to orthopedic procedures and treatments.');
+INSERT INTO Category (categoryName, description) VALUES ('Mobility Aids', 'Aids to assist with mobility, such as wheelchairs and walkers.');
+INSERT INTO Category (categoryName, description) VALUES ('Respiratory Equipment', 'Equipment for respiratory therapy and treatment.');
+INSERT INTO Category (categoryName, description) VALUES ('Infusion and Injection Supplies', 'Supplies for administering medications via infusion or injection.');
+INSERT INTO Category (categoryName, description) VALUES ('Wound Care Products', 'Products for treating and managing wounds and injuries.');
+INSERT INTO Category (categoryName, description) VALUES ('Patient Care Supplies', 'Supplies for patient care and comfort, including bedding and toiletries.');
+INSERT INTO Category (categoryName, description) VALUES ('Rehabilitation Equipment', 'Equipment used in physical and occupational therapy.');
+INSERT INTO Category (categoryName, description) VALUES ('Laboratory Equipment', 'Equipment used in medical and scientific laboratories.');
+INSERT INTO Category (categoryName, description) VALUES ('Medical Furniture', 'Furniture designed for use in medical facilities and clinics.');
+INSERT INTO Category (categoryName, description) VALUES ('Emergency Medical Supplies', 'Supplies for emergency medical care and response.');
+INSERT INTO Category (categoryName, description) VALUES ('Home Health Care Products', 'Products for home-based medical care and assistance.');
+INSERT INTO Category (categoryName, description) VALUES ('Medical Apparel', 'Clothing and attire worn by medical professionals.');
+INSERT INTO Category (categoryName, description) VALUES ('First Aid Kits and Supplies', 'Kits and supplies for basic first aid and emergency treatment.');
+INSERT INTO Category (categoryName, description) VALUES ('Medical Consumables', 'Consumable supplies used in medical procedures and treatments.');
+INSERT INTO Category (categoryName, description) VALUES ('Pharmaceutical Products', 'Medications and drugs used for medical treatment.');
+INSERT INTO Category (categoryName, description) VALUES ('Veterinary Equipment', 'Equipment used in veterinary medicine and animal care.');
+INSERT INTO Category (categoryName, description) VALUES ('Optometry Equipment', 'Equipment used in eye care and vision testing.');
+INSERT INTO Category (categoryName, description) VALUES ('Physical Therapy Equipment', 'Equipment used in physical therapy and rehabilitation.');
+INSERT INTO Category (categoryName, description) VALUES ('Hearing Aids and Accessories', 'Devices for hearing assistance and correction.');
+INSERT INTO Category (categoryName, description) VALUES ('Blood Collection Supplies', 'Supplies for collecting blood samples and specimens.');
+INSERT INTO Category (categoryName, description) VALUES ('Medical Training and Education Tools', 'Tools used in medical training and education programs.');
+INSERT INTO Category (categoryName, description) VALUES ('Medical Software and Apps', 'Software applications for medical purposes.');
+INSERT INTO Category (categoryName, description) VALUES ('Telemedicine Devices', 'Devices for remote medical consultations and telehealth services.');
+INSERT INTO Category (categoryName, description) VALUES ('Assisted Living Devices', 'Devices to assist with activities of daily living for seniors and individuals with disabilities.');
+INSERT INTO Category (categoryName, description) VALUES ('Biohazard and Infection Control Products', 'Products for handling biohazardous materials and infection control measures.');
+INSERT INTO Category (categoryName, description) VALUES ('Clinical Laboratory Instruments', 'Instruments used in clinical laboratory testing and analysis.');
+INSERT INTO Category (categoryName, description) VALUES ('Obstetrics and Gynecology Equipment', 'Equipment used in obstetrics and gynecology practices.');
+INSERT INTO Category (categoryName, description) VALUES ('Ophthalmic Instruments', 'Instruments used in ophthalmology and eye care.');
+INSERT INTO Category (categoryName, description) VALUES ('Podiatry Equipment', 'Equipment used in podiatry and foot care.');
+INSERT INTO Category (categoryName, description) VALUES ('Radiology Equipment', 'Equipment used in radiology and medical imaging.');
+INSERT INTO Category (categoryName, description) VALUES ('Medical Waste Management Products', 'Products for the safe disposal and management of medical waste.');
+INSERT INTO Category (categoryName, description) VALUES ('Hospital Bedside Equipment', 'Equipment and accessories for patient care at the bedside.');
+INSERT INTO Category (categoryName, description) VALUES ('Neurology Devices', 'Devices for diagnosing and treating neurological disorders.');
+INSERT INTO Category (categoryName, description) VALUES ('Dermatology Instruments', 'Instruments used in dermatology and skin care.');
+INSERT INTO Category (categoryName, description) VALUES ('Cardiology Equipment', 'Equipment used in cardiology and heart care.');
 
 -- CREATE USER_Med 'dev_user_Med'@'%' IDENTIFIED BY 'dev_password';
 -- GRANT ALL PRIVILEGES ON *.* TO 'dev_user_Med'@'%';

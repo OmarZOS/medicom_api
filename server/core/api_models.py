@@ -48,10 +48,12 @@ class User_API(BaseModel):
     user_Medname: str
     email: str
     password: str
-    preferences: List[str]
     fullName: str
     address: str
-    role: str
+    preferences_id: int
+    user_preferences: List[str]
+    user_RoleId : int
+    user_role: str
 
 class Payment_API(BaseModel):
     paymentId: int
